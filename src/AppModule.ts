@@ -3,7 +3,7 @@ import {ConfigModule} from "@nestjs/config";
 import {AppConfig} from "./configsettings/AppConfig";
 import {PingController} from "./controllers/PingController";
 import { AuthController } from './controllers/AuthController';
-import { DefaultAuthService } from './services/DefaultAuthService';
+import { CognitoAuthService } from './services/CognitoAuthService';
 
 const envPaths = [".env"];
 const stage = process.env["STAGE"];
@@ -21,10 +21,10 @@ console.log("Environments supported in this deployment ", envPaths);
 const getAuthService = () => {
     if (stage === "__LOCAL_DEV__") {
         Logger.debug("Using Local Cognito Security Service");
-        return DefaultAuthService;
+        return CognitoAuthService;
     } else {
         Logger.debug("Using Cognito Security Service");
-        return DefaultAuthService;
+        return CognitoAuthService;
     }
 };
 
@@ -41,7 +41,7 @@ const getAuthService = () => {
       AuthController
     ],
     providers: [
-        DefaultAuthService,
+        CognitoAuthService,
         {
             provide: "AuthService",
             useClass: getAuthService(),

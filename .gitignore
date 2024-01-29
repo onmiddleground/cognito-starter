@@ -42,3 +42,4 @@ lerna-debug.log*
 /api-private-threads/package-lock.json
 /api-proxy/package-lock.json
 .turbo
+/.env.__LOCAL_DEV__

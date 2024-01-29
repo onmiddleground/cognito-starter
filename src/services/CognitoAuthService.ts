@@ -5,12 +5,12 @@ import {
     SignUpCommand,
     CognitoIdentityProviderClient,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { ServiceResponse } from "src/lib/ServiceResponse";
-import { SignUpRequest } from "src/model/SignUpRequest";
+import { ServiceResponse } from "../lib/ServiceResponse";
+import { SignUpRequest } from "../model/SignUpRequest";
 
 @Injectable()
-export class DefaultAuthService implements AuthService {
-  private readonly logger = new Logger(DefaultAuthService.name);
+export class CognitoAuthService implements AuthService {
+  private readonly logger = new Logger(CognitoAuthService.name);
 
   constructor(private readonly appConfig: AppConfig) {}
 
