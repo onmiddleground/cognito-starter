@@ -1,95 +1,39 @@
-// import { describe } from 'node:test';
-// import { CognitoAuthService } from '../src/services/CognitoAuthService';
-// import {AppConfig} from "../src/configsettings/AppConfig";
-// jest.mock('../src/configsettings/AppConfig');
-//
-// describe("UserServices Test Suite", function() {
-//
-//   it("should sign up a user", async () => {
-//     let appConfig: AppConfig;
-//     jest.spyOn(appConfig, "getUserPoolAppClientId").mockImplementation(() => "mocked");
-//
-//
-//     const userService = new CognitoAuthService();
-//   })
-//
-// })
-
 import { CognitoAuthService } from './CognitoAuthService';
 import {AppConfig} from "../configsettings/AppConfig";
 import { Test, TestingModule } from '@nestjs/testing';
-jest.mock('../configsettings/AppConfig');
 
-const getAppConfig = () => {
-  const mocked = AppConfig as jest.MockedClass<typeof AppConfig>;
-  mocked.prototype.getUserPoolAppClientId.mockReturnValue("FIXME");
-  return mocked;
-};
+// 1. Mock the instance
+jest.mock('../configsettings/AppConfig');
 
 describe("UserServices Test Suite", function() {
 
   let cognitoService: CognitoAuthService;
+  // 2. Assign Mocked instance to Jest
+  let configMock: jest.Mocked<AppConfig>;
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [
-        // ConfigModule.forRoot({
-        //   envFilePath: [".env"],
-        //   isGlobal: true,
-        //   expandVariables: true,
-        // })
-      ],
+      imports: [],
       controllers: [],
       providers: [
-          CognitoAuthService,
-          {
-            provide: AppConfig,
-            useValue: getAppConfig,
-          },
+          CognitoAuthService,AppConfig,
       ],
     }).compile();
 
     cognitoService = moduleRef.get<CognitoAuthService>(CognitoAuthService);
+    configMock = moduleRef.get<AppConfig>(AppConfig) as jest.Mocked<AppConfig>;
   });
 
   it("should sign up a user", async () => {
+
+    // 3. Set a test value for the mocked instance
+    configMock.getUserPoolAppClientId.mockReturnValue(process.env.USER_POOL_CLIENT_ID);
+    configMock.getUserPoolAppSecret.mockReturnValue(process.env.USER_POOL_CLIENT_SECRET);
+
     await cognitoService.signup({
       email: "gary@onmiddleground.ca",
-      username: "testuser",
+      username: "gary@onmiddleground.ca",
       password: "Pass!234",
     })
   })
 })
-
-
-//
-//
-// import { AppService } from './app.service';
-// import { Config } from './config';
-//
-// // Mock the Config class
-// jest.mock('./config');
-//
-// describe('AppService', () => {
-//   let appService: AppService;
-//   let configMock: jest.Mocked<Config>;
-//
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       providers: [AppService, Config],
-//     }).compile();
-//
-//     appService = module.get<AppService>(AppService);
-//     configMock = module.get<Config>(Config) as jest.Mocked<Config>;
-//   });
-//
-//   it('should return config value', () => {
-//     const mockConfigValue = 'mockedConfigValue';
-//     configMock.getValue.mockReturnValue(mockConfigValue);
-//
-//     const result = appService.getConfigValue();
-//
-//     expect(result).toBe(mockConfigValue);
-//     expect(configMock.getValue).toHaveBeenCalled();
-//   });
-// });

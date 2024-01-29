@@ -75,6 +75,10 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
+    "__comment__": "setupFiles is the line to load environment variables for Jest to find them",
+    "setupFiles": ["dotenv/config"],
+    "setupFilesAfterEnv": ["<rootDir>/setupTests.js"],
+
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   }

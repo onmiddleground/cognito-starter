@@ -8,6 +8,7 @@
     "esModuleInterop": true,  // serverless express
     "allowSyntheticDefaultImports": true,
     "target": "es2017",
+    "allowJs": true,
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",

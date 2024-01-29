@@ -7,6 +7,7 @@ import {
 } from "@aws-sdk/client-cognito-identity-provider";
 import { ServiceResponse } from "../lib/ServiceResponse";
 import { SignUpRequest } from "../model/SignUpRequest";
+import { createHmac } from 'crypto';
 
 @Injectable()
 export class CognitoAuthService implements AuthService {
@@ -14,11 +15,20 @@ export class CognitoAuthService implements AuthService {
 
   constructor(private readonly appConfig: AppConfig) {}
 
+calculateSecretHash(username: string, clientId: string, clientSecret: string): string {
+    const data = username + clientId;
+    return createHmac('sha256', clientSecret).update(data, 'utf8').digest('base64');
+}
+
   async signup(signUpRequest: SignUpRequest): Promise<ServiceResponse> {
       const client = new CognitoIdentityProviderClient({});
 
+      const poolClientId = this.appConfig.getUserPoolAppClientId();
+      const poolClientSecret = this.appConfig.getUserPoolAppSecret();
+
       const command = new SignUpCommand({
-          ClientId: this.appConfig.getUserPoolAppClientId(),
+          ClientId: poolClientId,
+          SecretHash: this.calculateSecretHash(signUpRequest.username, poolClientId, poolClientSecret),
           Username: signUpRequest.username,
           Password: signUpRequest.password,
           UserAttributes: [{ Name: "email", Value: signUpRequest.email }],
