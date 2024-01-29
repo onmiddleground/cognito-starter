@@ -12,6 +12,15 @@ import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 class CognitoStack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+
+    const postConfirmationLambda = new lambda.Function(scope, 'PostConfirmationLambda', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('path/to/your/lambda/code'), // Adjust the path accordingly
+      functionName: 'MyPostConfirmationLambda',
+      description: 'Lambda function for post-confirmation trigger',
+    });
+
     // Create a Cognito User Pool
     const userPool = new cognito.UserPool(scope, `${id}-user-pool`, {
       userPoolName: `demo-auth`,
@@ -27,9 +36,18 @@ class CognitoStack {
       accountRecovery: cognito.AccountRecovery.EMAIL_ONLY, // Allow account recovery through email
     });
 
-    userPool.addClient("demo", {
+    // Grant necessary permissions to the Lambda function
+    postConfirmationLambda.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['cognito-idp:AdminUpdateUserAttributes'],
+      resources: [userPool.userPoolArn],
+    }));
 
-    })
+    userPool.addTrigger(cognito.UserPoolOperation.POST_CONFIRMATION, postConfirmationLambda);
+
+
+    // userPool.addClient("demo", {
+    //
+    // })
 
     // const userPoolClient = userPool.addClient('MyUserPoolClient', {
     //   oAuth: {
