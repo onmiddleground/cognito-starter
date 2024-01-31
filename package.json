@@ -7,7 +7,14 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
+    "clean": "rimraf aws_dist && rimraf dist",
     "aws:build": "node esbuild.config.js",
+    "aws:dev:synth": "pnpm run clean && node esbuild.config.js && cd cdk-deploy && cdk synth --profile tci",
+    "aws:dev:deploy": "pnpm run clean && node esbuild.config.js && cd cdk-deploy && cdk deploy --profile tci",
+    "aws:dev:destroy": "cd cdk-deploy && cdk destroy --profile tci --force",
+    "aws:qa:synth": "pnpm run clean && node esbuild.config.js && cd cdk-deploy && cdk synth --context STAGE=qa --profile tci",
+    "aws:qa:deploy": "pnpm run clean && node esbuild.config.js && cd cdk-deploy && cdk deploy --context STAGE=qa --profile tci",
+    "aws:qa:destroy": "cd cdk-deploy && cdk destroy --context STAGE=qa --profile tci",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "STAGE=__LOCAL_DEV__ nest start",
     "start:dev": "nest start --watch",
@@ -33,6 +40,7 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
+    "rimraf": "^5.0.5",
     "@aws-sdk/client-cognito-identity-provider": "^3.478.0",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
